@@ -21,8 +21,20 @@ export default async function handler(
   const accessSecret = process.env.X_ACCESS_TOKEN_SECRET;
 
   if (!appKey || !appSecret || !accessToken || !accessSecret) {
-    console.error("Missing Twitter API keys");
-    return response.status(500).json({ error: "Server configuration error" });
+    const missing = [];
+    if (!appKey) missing.push("X_API_KEY");
+    if (!appSecret) missing.push("X_API_KEY_SECRET");
+    if (!accessToken) missing.push("X_ACCESS_TOKEN");
+    if (!accessSecret) missing.push("X_ACCESS_TOKEN_SECRET");
+
+    console.error("Missing Twitter API keys:", missing);
+    return response
+      .status(500)
+      .json({
+        error: `Server configuration error. MIssing environment variables: ${missing.join(
+          ", "
+        )}`,
+      });
   }
 
   const client = new TwitterApi({
